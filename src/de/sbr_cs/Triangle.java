@@ -1,53 +1,80 @@
 package de.sbr_cs;
 
+import org.math.plot.Plot2DPanel;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Triangle {
-    private Point p1;
-    private Point p2;
-    private Point p3;
-    private boolean isDelaunayConform;
+    private List<Point> points;
+    private TriangleNeighbours neighbour1 = null;
+    private TriangleNeighbours neighbour2 = null;
+    private TriangleNeighbours neighbour3 = null;
 
     public Triangle(Point point1, Point point2, Point point3) {
-        this.p1 = point1;
-        this.p2 = point2;
-        this.p3 = point3;
-        this.isDelaunayConform = delaunayConformityCheck();
+        this.points = Arrays.asList(new Point[]{point1, point2, point3});
     }
 
-
-    public boolean isDelaunayConform() {
-        return isDelaunayConform;
+    public List<Point> getPoints() {
+        //this prevents write access to points List
+        return new ArrayList<>(points);
     }
 
-    public Point getP1() {
-        return p1;
+    public void replacePoint(Point oldPoint, Point newPoint) throws InvalidPointException {
+        if (points.contains(oldPoint)) {
+            points.set(points.indexOf(oldPoint), newPoint);
+        } else {
+            throw new InvalidPointException(String.format("Triangle does not contain Point (%f|%f)", oldPoint.getX(), oldPoint.getY()));
+        }
     }
 
-    public void setP1(Point p1) {
-        this.p1 = p1;
-        this.isDelaunayConform = delaunayConformityCheck();
+    private double calculateAngle(Point ankerPoint, Point p1, Point p2) {
+
+        //direction Vector from ankerPoint to p1
+        double x1 = p1.getX() - ankerPoint.getX();
+        double y1 = p1.getY() - ankerPoint.getY();
+        //direction Vector from ankerPoint to p2
+        double x2 = p2.getX() - ankerPoint.getX();
+        double y2 = p2.getY() - ankerPoint.getY();
+
+        //use dot product to callculate angle between the two vectors
+        return Math.toDegrees(Math.acos((x1 * x2 + y1 * y2) / (Math.sqrt(x1 * x1 + y1 * y1) * Math.sqrt(x2 * x2 + y2 * y2))));
     }
 
-    public Point getP2() {
-        return p2;
+    public double getLargestAngle() {
+        double a1 = calculateAngle(points.get(0), points.get(1), points.get(2));
+        double a2 = calculateAngle(points.get(1), points.get(0), points.get(2));
+        double a3 = calculateAngle(points.get(2), points.get(0), points.get(1));
+
+        return Math.max(a1, Math.max(a2, a3));
     }
 
-    public void setP2(Point p2) {
-        this.p2 = p2;
-        this.isDelaunayConform = delaunayConformityCheck();
+    public boolean isNeighbour(Triangle triangle) {
+        short overlappingPoints = 0;
+
+        List<Point> neighbourPoints = triangle.getPoints();
+
+        for (Point p : points) {
+            if (neighbourPoints.contains(p)) {
+                overlappingPoints++;
+            }
+        }
+
+        return overlappingPoints >= 2;
     }
 
-    public Point getP3() {
-        return p3;
-    }
+    public void draw(Plot2DPanel plot){
 
-    public void setP3(Point p3) {
-        this.p3 = p3;
-        this.isDelaunayConform = delaunayConformityCheck();
-    }
+        Point p1 = points.get(0);
+        Point p2 = points.get(1);
+        Point p3 = points.get(2);
 
-    //Returns if triangle is delaunayConform
-    public boolean delaunayConformityCheck(){
-        //TODO: implement Delaunay conformity check
+
+        plot.addLinePlot("", Color.BLUE, new double[] {p1.getX(), p1.getY()}, new double[] {p2.getX(), p2.getY()});
+        plot.addLinePlot("", Color.BLUE, new double[] {p2.getX(), p2.getY()}, new double[] {p3.getX(), p3.getY()});
+        plot.addLinePlot("", Color.BLUE, new double[] {p3.getX(), p3.getY()}, new double[] {p1.getX(), p1.getY()});
     }
 
 }
