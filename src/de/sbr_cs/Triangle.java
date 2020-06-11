@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Triangle {
+public class Triangle implements Drawable {
     private List<Point> points;
     private TriangleNeighbours neighbour1 = null;
     private TriangleNeighbours neighbour2 = null;
@@ -19,7 +19,7 @@ public class Triangle {
 
     public List<Point> getPoints() {
         //this prevents write access to points List
-        return new ArrayList<>(points);
+        return new ArrayList<Point>(points);
     }
 
     public void replacePoint(Point oldPoint, Point newPoint) throws InvalidPointException {
@@ -66,15 +66,19 @@ public class Triangle {
     }
 
     public void draw(Plot2DPanel plot){
+        draw(plot, Color.BLUE);
+    }
 
+    @Override
+    public void draw(Plot2DPanel plot, Color color) {
         Point p1 = points.get(0);
         Point p2 = points.get(1);
         Point p3 = points.get(2);
 
-
-        plot.addLinePlot("", Color.BLUE, new double[] {p1.getX(), p1.getY()}, new double[] {p2.getX(), p2.getY()});
-        plot.addLinePlot("", Color.BLUE, new double[] {p2.getX(), p2.getY()}, new double[] {p3.getX(), p3.getY()});
-        plot.addLinePlot("", Color.BLUE, new double[] {p3.getX(), p3.getY()}, new double[] {p1.getX(), p1.getY()});
+        plot.addLinePlot("", color, new double[] {p1.getX(), p1.getY()}, new double[] {p2.getX(), p2.getY()});
+        plot.addLinePlot("", color, new double[] {p2.getX(), p2.getY()}, new double[] {p3.getX(), p3.getY()});
+        plot.addLinePlot("", color, new double[] {p3.getX(), p3.getY()}, new double[] {p1.getX(), p1.getY()});
     }
+
 
 }

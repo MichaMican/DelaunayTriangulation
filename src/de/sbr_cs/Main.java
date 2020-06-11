@@ -11,18 +11,18 @@ public class Main {
 	    Triangle t1 = new Triangle(new Point(2,0), new Point(1,2), new Point(2,3));
 	    Triangle t2 = new Triangle(new Point(2,0), new Point(2,3), new Point(3,2));
 
+	    GUI gui = new GUI();
+
 	    if(t1.isNeighbour(t2)){
 			try {
-
 				Plot2DPanel plot = new Plot2DPanel();
 
-				t1.draw(plot);
-				t2.draw(plot);
+				gui.draw(t1);
+				gui.draw(t2);
+				gui.draw(t1.getPoints());
+				gui.draw(t2.getPoints());
 
-				JFrame frame = new JFrame("a plot panel");
-				frame.setContentPane(plot);
-				frame.setVisible(true);
-
+				Thread.sleep(2000);
 
 				TriangleNeighbours triangleNeighbours = new TriangleNeighbours(t1, t2);
 				System.out.println("Current Delaunay Status: "+triangleNeighbours.isDelaunayConform());
@@ -33,8 +33,18 @@ public class Main {
 
 				System.out.println("Delaunay Status after rotation: "+triangleNeighbours.isDelaunayConform());
 
+				gui.resetAll();
 
-			} catch (InvalidTriangleNeighboursException | InvalidPointException e) {
+				gui.draw(t1);
+				gui.draw(t2);
+				gui.draw(t1.getPoints());
+				gui.draw(t2.getPoints());
+
+				Thread.sleep(2000);
+				System.exit(0);
+
+
+			} catch (InvalidTriangleNeighboursException | InvalidPointException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}

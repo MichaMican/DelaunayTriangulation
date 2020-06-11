@@ -1,8 +1,11 @@
 package de.sbr_cs;
 
+import org.math.plot.Plot2DPanel;
+
+import java.awt.*;
 import java.util.Objects;
 
-public class Point {
+public class Point implements Drawable {
     private double x;
     private double y;
 
@@ -22,6 +25,19 @@ public class Point {
 
     public double getDistance(Point p){
         return Math.sqrt(Math.pow((p.getX() - x), 2) + Math.pow((p.getY() - y), 2));
+    }
+
+    @Override
+    public void draw(Plot2DPanel plot){
+        draw(plot, Color.RED);
+    }
+
+    @Override
+    public void draw(Plot2DPanel plot, Color color) {
+        double size = 0.5;
+
+        plot.addLinePlot("", color, new double[] {x-size/2,y+size/2}, new double[] {x+size/2,y-size/2});
+        plot.addLinePlot("", color, new double[] {x-size/2,y-size/2}, new double[] {x+size/2,y+size/2});
     }
 
     @Override
