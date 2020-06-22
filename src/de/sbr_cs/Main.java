@@ -24,28 +24,33 @@ public class Main {
         gui.resetAll();
         gui.draw(triangles);
 
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         boolean flipWasPerformed;
         do {
-//            try {
-//                Thread.sleep(2000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-
             flipWasPerformed = false;
             for (Triangle t : triangles) {
-                gui.draw(t, Color.GREEN);
                 flipWasPerformed |= t.attainDelauneyForNeighbours();
-                if(flipWasPerformed){
+                if (flipWasPerformed) {
+                    gui.resetAll();
+                    gui.draw(triangles);
+                    try {
+                        //This Thread sleep causes an RuntimeException in GUI Thread (because the gui thread gets frozen too)
+                        //However this thread.sleep is only for visual purposes => I won't fix it
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 }
-                gui.draw(t, Color.MAGENTA);
             }
-
-            gui.resetAll();
-            gui.draw(triangles);
-
         } while (flipWasPerformed); //if a flip was performed the net has to be checked again for sideeffected delauney invalidity
+
+
 
 
         System.out.println("FINISHED");
