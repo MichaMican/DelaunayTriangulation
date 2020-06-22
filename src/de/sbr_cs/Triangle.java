@@ -6,15 +6,51 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Triangle implements Drawable {
     private List<Point> points;
-    private TriangleNeighbours neighbour1 = null;
-    private TriangleNeighbours neighbour2 = null;
-    private TriangleNeighbours neighbour3 = null;
+    private List<Triangle> neighbours;
 
     public Triangle(Point point1, Point point2, Point point3) {
         this.points = Arrays.asList(new Point[]{point1, point2, point3});
+        this.neighbours = new ArrayList<>();
+    }
+
+    public Triangle(double x1, double y1, double x2, double y2, double x3, double y3) {
+        this(new Point(x1,y1), new Point(x2,y2), new Point(x3,y3));
+    }
+
+    public void addNeighbour(Triangle t) throws InvalidTriangleNeighboursException {
+        if(this.isNeighbour(t)){
+            if(!neighbours.contains(t)){
+                neighbours.add(t);
+            }
+        } else {
+            throw new InvalidTriangleNeighboursException();
+        }
+    }
+
+    private void removeNeighbour(Triangle triangle) {
+        neighbours.remove(triangle);
+    }
+
+    //returns if a flip hat to be performed
+    public boolean attainDelauneyForNeighbours(){
+        boolean flipWasPerformed = false;
+        for(Triangle t : neighbours){
+            try {
+                flipWasPerformed |= FlipHelper.flipTrianglesNeighbours(this,t);
+            } catch (InvalidTriangleNeighboursException e) {
+                e.printStackTrace();
+            }
+        }
+        return flipWasPerformed;
+    }
+
+    public List<Triangle> getNeighbours() {
+        return neighbours;
     }
 
     public List<Point> getPoints() {
@@ -43,12 +79,13 @@ public class Triangle implements Drawable {
         return Math.toDegrees(Math.acos((x1 * x2 + y1 * y2) / (Math.sqrt(x1 * x1 + y1 * y1) * Math.sqrt(x2 * x2 + y2 * y2))));
     }
 
-    public double getLargestAngle() {
-        double a1 = calculateAngle(points.get(0), points.get(1), points.get(2));
-        double a2 = calculateAngle(points.get(1), points.get(0), points.get(2));
-        double a3 = calculateAngle(points.get(2), points.get(0), points.get(1));
+    // returns the angle on the opposite side of the line segment
+    public double getOppositeSideAngle(Point p1, Point p2) {
 
-        return Math.max(a1, Math.max(a2, a3));
+        //get the opposite point
+        Point p3 = points.stream().filter(point -> !point.equals(p1) && !point.equals(p2)).collect(Collectors.toList()).get(0);
+
+        return calculateAngle(p3, p1, p2);
     }
 
     public boolean isNeighbour(Triangle triangle) {
@@ -65,6 +102,7 @@ public class Triangle implements Drawable {
         return overlappingPoints >= 2;
     }
 
+    @Override
     public void draw(Plot2DPanel plot){
         draw(plot, Color.BLUE);
     }
@@ -78,6 +116,83 @@ public class Triangle implements Drawable {
         plot.addLinePlot("", color, new double[] {p1.getX(), p1.getY()}, new double[] {p2.getX(), p2.getY()});
         plot.addLinePlot("", color, new double[] {p2.getX(), p2.getY()}, new double[] {p3.getX(), p3.getY()});
         plot.addLinePlot("", color, new double[] {p3.getX(), p3.getY()}, new double[] {p1.getX(), p1.getY()});
+
+        p1.draw(plot);
+        p2.draw(plot);
+        p3.draw(plot);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Triangle triangle = (Triangle) o;
+        return Objects.equals(points, triangle.points);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(points);
+    }
+
+    public boolean isDelaunayConform(Triangle neighbourTriangle) throws InvalidTriangleNeighboursException {
+
+        if(!this.isNeighbour(neighbourTriangle)){
+            throw new InvalidTriangleNeighboursException("The triangles aren't neighbours");
+        }
+
+        List<Point> contactPoints = getContactPoints(neighbourTriangle);
+
+        return 180 >= (this.getOppositeSideAngle(contactPoints.get(0), contactPoints.get(1)) +
+                neighbourTriangle.getOppositeSideAngle(contactPoints.get(0), contactPoints.get(1)));
+    }
+
+    public List<Point> getContactPoints(Triangle neighbourTriangle){
+
+        List<Point> overlappingPoints = new ArrayList<Point>();
+        List<Point> neighbourPoints = neighbourTriangle.getPoints();
+
+        for (Point p : this.getPoints()) {
+            if(neighbourPoints.contains(p)){
+                overlappingPoints.add(p);
+            }
+        }
+
+        return overlappingPoints;
+    }
+
+
+    public void updateNeighbours(List<Triangle> neighbourPool) {
+
+
+
+        //remove old Neighbours
+        List<Triangle> neighboursToRemove = new ArrayList<>();
+        for(Triangle t : neighbours){
+            if(!isNeighbour(t)){
+                neighboursToRemove.add(t);
+                t.removeNeighbour(this);
+            }
+        }
+        for(Triangle t : neighboursToRemove){
+            neighbours.remove(t);
+        }
+
+        //add new Neighbours
+        for(Triangle t : neighbourPool){
+            if(isNeighbour(t) && !this.equals(t)){
+                if(!neighbours.contains(t)){
+                    neighbours.add(t);
+                    try {
+                        t.addNeighbour(this);
+                    } catch (InvalidTriangleNeighboursException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+
     }
 
 

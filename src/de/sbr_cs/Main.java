@@ -1,52 +1,101 @@
 package de.sbr_cs;
 
+import com.opencsv.exceptions.CsvValidationException;
 import org.math.plot.Plot2DPanel;
 
-import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Main {
 
     public static void main(String[] args) {
-	    Triangle t1 = new Triangle(new Point(2,0), new Point(1,2), new Point(2,3));
-	    Triangle t2 = new Triangle(new Point(2,0), new Point(2,3), new Point(3,2));
+        List<Triangle> triangles = new ArrayList<>();
+        try {
+            triangles = TriangleNetParser.parse("E:\\GITs\\DelunayTriangulation\\testTriangle.csv");
+        } catch (CsvValidationException | IOException e) {
+            e.printStackTrace();
+        }
 
-	    GUI gui = new GUI();
+        GUI gui = new GUI();
 
-	    if(t1.isNeighbour(t2)){
-			try {
-				Plot2DPanel plot = new Plot2DPanel();
+        gui.resetAll();
+        gui.draw(triangles);
 
-				gui.draw(t1);
-				gui.draw(t2);
-				gui.draw(t1.getPoints());
-				gui.draw(t2.getPoints());
+        boolean flipWasPerformed;
+        do {
+//            try {
+//                Thread.sleep(2000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
 
-				Thread.sleep(2000);
+            flipWasPerformed = false;
+            for (Triangle t : triangles) {
+                gui.draw(t, Color.GREEN);
+                flipWasPerformed |= t.attainDelauneyForNeighbours();
+                if(flipWasPerformed){
+                    break;
+                }
+                gui.draw(t, Color.MAGENTA);
+            }
 
-				TriangleNeighbours triangleNeighbours = new TriangleNeighbours(t1, t2);
-				System.out.println("Current Delaunay Status: "+triangleNeighbours.isDelaunayConform());
+            gui.resetAll();
+            gui.draw(triangles);
 
-				FlipHelper flipHelper = new FlipHelper();
-
-				flipHelper.flipTrianglesNeighbours(triangleNeighbours);
-
-				System.out.println("Delaunay Status after rotation: "+triangleNeighbours.isDelaunayConform());
-
-				gui.resetAll();
-
-				gui.draw(t1);
-				gui.draw(t2);
-				gui.draw(t1.getPoints());
-				gui.draw(t2.getPoints());
-
-				Thread.sleep(2000);
-				System.exit(0);
+        } while (flipWasPerformed); //if a flip was performed the net has to be checked again for sideeffected delauney invalidity
 
 
-			} catch (InvalidTriangleNeighboursException | InvalidPointException | InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+        System.out.println("FINISHED");
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
+
+    private static void demo1() {
+        Triangle t1 = new Triangle(new Point(2, 0), new Point(1, 2), new Point(2, 3));
+        Triangle t2 = new Triangle(new Point(2, 0), new Point(2, 3), new Point(3, 2));
+
+        GUI gui = new GUI();
+
+        if (t1.isNeighbour(t2)) {
+            try {
+                Plot2DPanel plot = new Plot2DPanel();
+
+                gui.draw(t1);
+                gui.draw(t2);
+                gui.draw(t1.getPoints());
+                gui.draw(t2.getPoints());
+
+                Thread.sleep(2000);
+
+                System.out.println("Current Delaunay Status: " + t1.isDelaunayConform(t2));
+
+                FlipHelper.flipTrianglesNeighbours(t1, t2);
+
+                System.out.println("Delaunay Status after rotation: " + t1.isDelaunayConform(t2));
+
+                gui.resetAll();
+
+                gui.draw(t1);
+                gui.draw(t2);
+                gui.draw(t1.getPoints());
+                gui.draw(t2.getPoints());
+
+                Thread.sleep(2000);
+                System.exit(0);
+
+
+            } catch (InvalidTriangleNeighboursException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 }

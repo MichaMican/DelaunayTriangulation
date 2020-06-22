@@ -40,5 +40,10 @@ public class GUI {
         frame.repaint();
     }
 
+    public void draw(Drawable toDraw, Color color){
+        toDraw.draw(plot, color);
+        frame.repaint();
+    }
+
 
 }
