@@ -23,6 +23,9 @@ public class GUI {
     // Constructors
     //================================================================================
 
+    /**
+     * Create new GUI object
+     */
     public GUI(){
         plot = new Plot2DPanel();
 
@@ -38,6 +41,9 @@ public class GUI {
     // Methods
     //================================================================================
 
+    /**
+     * Removes all drawings from UI
+     */
     public void resetAll(){
         plot.removeAllPlots();
         //Make the coosys fixed size

@@ -22,6 +22,11 @@ public class Point implements Drawable {
     // Constructors
     //================================================================================
 
+    /**
+     * Create new point object
+     * @param x x Coordinate
+     * @param y y Coordinate
+     */
     public Point(double x, double y){
         this.x = x;
         this.y = y;

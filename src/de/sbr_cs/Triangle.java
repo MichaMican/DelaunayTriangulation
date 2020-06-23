@@ -29,11 +29,26 @@ public class Triangle implements Drawable {
     // Constructors
     //================================================================================
 
+    /**
+     * Create triangle object
+     * @param point1 Corner point 1
+     * @param point2 Corner point 2
+     * @param point3 Corner point 3
+     */
     public Triangle(Point point1, Point point2, Point point3) {
-        this.points = Arrays.asList(new Point[]{point1, point2, point3});
+        this.points = Arrays.asList(point1, point2, point3);
         this.neighbours = new ArrayList<>();
     }
 
+    /**
+     * Create triangle object
+     * @param x1 Corner point 1 xcor
+     * @param y1 Corner point 1 ycor
+     * @param x2 Corner point 2 xcor
+     * @param y2 Corner point 2 ycor
+     * @param x3 Corner point 3 xcor
+     * @param y3 Corner point 3 ycor
+     */
     public Triangle(double x1, double y1, double x2, double y2, double x3, double y3) {
         this(new Point(x1,y1), new Point(x2,y2), new Point(x3,y3));
     }
@@ -169,7 +184,7 @@ public class Triangle implements Drawable {
         double x2 = p2.getX() - ankerPoint.getX();
         double y2 = p2.getY() - ankerPoint.getY();
 
-        //use dot product to callculate angle between the two vectors
+        //use dot product to calculate angle between the two vectors
         return Math.toDegrees(Math.acos((x1 * x2 + y1 * y2) / (Math.sqrt(x1 * x1 + y1 * y1) * Math.sqrt(x2 * x2 + y2 * y2))));
     }
 

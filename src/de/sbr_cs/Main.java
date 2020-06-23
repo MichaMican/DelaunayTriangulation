@@ -7,9 +7,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Main class
+ * @author Michael Mican
+ * @version 1.0
+ */
 public class Main {
 
+    /**
+     * Main function
+     * @param args
+     */
     public static void main(String[] args) {
         List<Triangle> triangles = new ArrayList<>();
         try {
