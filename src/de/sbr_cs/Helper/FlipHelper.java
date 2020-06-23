@@ -1,4 +1,9 @@
-package de.sbr_cs;
+package de.sbr_cs.Helper;
+
+import de.sbr_cs.Exception.InvalidPointException;
+import de.sbr_cs.Exception.InvalidTriangleNeighboursException;
+import de.sbr_cs.Point;
+import de.sbr_cs.Triangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +11,13 @@ import java.util.stream.Collectors;
 
 public abstract class FlipHelper {
 
-    //return if a flip was performed
+    /**
+     * Performes a "flip" if the Triangles aren't delauney conform
+     * @param t1 Triangle 1
+     * @param t2 Triangle 2
+     * @return Boolean value if a flip was performed
+     * @throws InvalidTriangleNeighboursException Thrown if the two triangles aren't neighbours
+     */
     public static boolean flipTrianglesNeighbours(Triangle t1, Triangle t2) throws InvalidTriangleNeighboursException {
         if(!t1.isDelaunayConform(t2)){
             List<Point> overLappingPoints = t1.getContactPoints(t2);

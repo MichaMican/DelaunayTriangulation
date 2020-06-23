@@ -1,19 +1,35 @@
 package de.sbr_cs;
 
+import de.sbr_cs.Interface.Drawable;
 import org.math.plot.Plot2DPanel;
 
 import java.awt.*;
 import java.util.Objects;
 
+/**
+ * Point object
+ */
 public class Point implements Drawable {
+
+    //================================================================================
+    // Properties
+    //================================================================================
+
     private double x;
     private double y;
+
+    //================================================================================
+    // Constructors
+    //================================================================================
 
     public Point(double x, double y){
         this.x = x;
         this.y = y;
     }
 
+    //================================================================================
+    // Accessors
+    //================================================================================
 
     public double getX() {
         return x;
@@ -23,9 +39,22 @@ public class Point implements Drawable {
         return y;
     }
 
+    //================================================================================
+    // Methods
+    //================================================================================
+
+    /**
+     * Callculate distance to point
+     * @param p point to which the distance should be callculated
+     * @return distance between this point and point p
+     */
     public double getDistance(Point p){
         return Math.sqrt(Math.pow((p.getX() - x), 2) + Math.pow((p.getY() - y), 2));
     }
+
+    //================================================================================
+    // Overrides
+    //================================================================================
 
     @Override
     public void draw(Plot2DPanel plot){

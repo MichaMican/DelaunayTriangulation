@@ -1,4 +1,4 @@
-package de.sbr_cs;
+package de.sbr_cs.Exception;
 
 public class AlreadyRegisteredNeighboursException extends RuntimeException {
     public AlreadyRegisteredNeighboursException(String errorMessage) {

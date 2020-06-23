@@ -1,4 +1,4 @@
-package de.sbr_cs;
+package de.sbr_cs.Exception;
 
 public class InvalidTriangleNeighboursException extends Exception {
     public InvalidTriangleNeighboursException(String errorMessage) {
